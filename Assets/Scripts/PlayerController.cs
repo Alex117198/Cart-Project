@@ -5,13 +5,11 @@ public class PlayerController : MonoBehaviour
 {
     public int currentLane = 1; // Carril actual (0 = izquierdo, 1 = central, 2 = derecho)
     public int position = 0; // Posición lógica en el eje Z (progreso en el tablero)
-
     // Variables de movimiento
     public float laneOffset = 2f; // Distancia entre carriles en el eje X
     public float trackOffset = 0f; // Este offset es la coordenada en X que se tiene para el jugador y la IA
     public float forwardStep = 2f; // Cuánto avanza por unidad en el eje Z
     public bool isPlayer = false; // Al momento de asignar el script, marcarlo si se asigna a jugador
-
     public float moveSpeed = 5f; // velocidad de suavizado
     private Vector3 targetPosition; // posición objetivo
 
