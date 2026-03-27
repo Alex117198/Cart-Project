@@ -19,6 +19,6 @@ public class Start_Race : MonoBehaviour
         }
 
         yield return new WaitForSeconds(3.0f);
-        SceneManager.LoadScene("Alex Scene"); 
+        SceneManager.LoadScene("Pablo Scene"); 
     }
 }
