@@ -6,7 +6,7 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Elkin Scene.unity
+    path: Assets/Scenes/Menu_Scene.unity
     guid: c87107dcf849fe14585c497237b95b9b
   - enabled: 1
     path: Assets/Scenes/Alex Scene.unity
