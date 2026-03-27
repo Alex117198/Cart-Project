@@ -9,12 +9,12 @@ public class Start_Race : MonoBehaviour
     public GameObject panelTutorial;
 
     [Header("Efectos de Sonido")]
-    public AudioSource sfxMenuStart; 
+    public AudioSource sfxMenuStart;
     public AudioSource sfxRazaContinue;
     public AudioSource sfxRetry;
 
     [Header("Configuración de Escenas")]
-    public string EscenaJuego = "Pablo Scene";
+    public string EscenaJuego = "Main Scene";
     public string EscenaMenu = "Menu_Scene";
 
 
@@ -43,7 +43,7 @@ public class Start_Race : MonoBehaviour
 
 
         yield return new WaitForSeconds(3.5f);
-        SceneManager.LoadScene(EscenaJuego); 
+        SceneManager.LoadScene(1); 
     }
 
 
@@ -60,12 +60,12 @@ public class Start_Race : MonoBehaviour
         }
 
         yield return new WaitForSeconds(4.0f); 
-        SceneManager.LoadScene(EscenaJuego);
+        SceneManager.LoadScene(1);
     }
 
 
     public void IrAlMenu()
     {
-        SceneManager.LoadScene(EscenaMenu);
+        SceneManager.LoadScene(0);
     }
 }

@@ -9,9 +9,12 @@ EditorBuildSettings:
     path: Assets/Scenes/Menu_Scene.unity
     guid: c87107dcf849fe14585c497237b95b9b
   - enabled: 1
+    path: Assets/Scenes/Main Scene.unity
+    guid: b8e3efe972e7a2f4c820d80a35a80a80
+  - enabled: 1
     path: Assets/Scenes/Alex Scene.unity
     guid: a9b07a301d0e4ee4cb2dd20cd05be94f
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Pablo Scene.unity
     guid: 2d1b131b6ad5b194d8125cdf6bcab7e2
   m_configObjects:
