@@ -6,6 +6,8 @@ public class GameManager : MonoBehaviour
 {
     // Referencias principales del juego
     public DiceSystem dice; // Sistema de dado
+    public UIManager uiPlayer; // UI del jugador 1
+    public UIManager uiEnemy; // UI del jugador 2
     public PlayerController player; // Jugador
     public PlayerController enemy; // IA o enemigo
     public AIController ai; // Lógica de la IA
@@ -18,6 +20,13 @@ public class GameManager : MonoBehaviour
     private DiceAction currentAction; // Acción actual del dado
     private int lastRoll; // Último valor del dado
     private bool gameOver = false; // Controla si el juego terminó
+
+    void Start()
+    {
+        // Inicializa UI
+        uiPlayer.SetTurn(playerTurn);
+        uiEnemy.SetTurn(playerTurn);
+    }
 
     void Update()
     {
@@ -47,7 +56,9 @@ public class GameManager : MonoBehaviour
     // Metodo principal para ejecutar el turno actual del jugador o la IA
     public void PlayTurn()
     {
-        Debug.Log(playerTurn ? "TURNO DEL JUGADOR" : "TURNO DE LA IA");
+        // Mostrar turno en UI
+        uiPlayer.SetTurn(playerTurn);
+        uiEnemy.SetTurn(playerTurn);
 
         // Lanza el dado y obtiene acción
         int roll;
@@ -56,7 +67,13 @@ public class GameManager : MonoBehaviour
         lastRoll = roll;
         currentAction = action;
 
-        Debug.Log("Dado: " + roll + " → Acción: " + action);
+        // Mostrar dado
+        uiPlayer.SetDice(roll);
+        uiEnemy.SetDice(roll);
+
+        // Mostrar acción base
+        uiPlayer.SetAction("Acción: " + action);
+        uiEnemy.SetAction("Acción: " + action);
 
         // Lógica del turno del jugador
         if (playerTurn)
@@ -70,14 +87,16 @@ public class GameManager : MonoBehaviour
 
                 // Muestra mensaje para elegir carril de ataque y muestra las opciones, 
                 // tambien espera el input del jugador para elegir el carril a atacar
-                Debug.Log("ELIGE CARRIL PARA ATACAR:");
-                Debug.Log("Presiona 1 = Izquierda | 2 = Centro | 3 = Derecha");
+                uiPlayer.SetAction("ELIGE CARRIL: 1=Izq 2=Centro 3=Der");
+                uiEnemy.SetAction("Jugador eligiendo ataque...");
                 waitingForAttackInput = true;
             }
             // Solo moverse
             else if (action == DiceAction.Move)
             {
                 player.MoveForward(2);
+                uiPlayer.SetAction("Avanzas");
+                uiEnemy.SetAction("Jugador avanza");
                 EndTurn();
             }
         }
@@ -91,27 +110,32 @@ public class GameManager : MonoBehaviour
     // Comportamiento de la IA según la acción obtenida del dado
     void HandleAITurn(DiceAction action)
     {
-        Debug.Log("IA ejecuta acción: " + action);
+        uiPlayer.SetAction("IA ejecuta: " + action);
+        uiEnemy.SetAction("IA ejecuta: " + action);
 
         if (action == DiceAction.Move)
         {
-            Debug.Log("IA avanza");
+            uiPlayer.SetAction("IA avanza");
+            uiEnemy.SetAction("Avanzas");
             enemy.MoveForward(2);
             EndTurn();
         }
         else if (action == DiceAction.Attack)
         {
             int lane = ai.ChooseLane(); // IA elige carril de ataque
-            Debug.Log("IA ataca al carril: " + (lane + 1));
+            uiPlayer.SetAction("IA ataca carril: " + (lane + 1));
+            uiEnemy.SetAction("Atacas carril: " + (lane + 1));
             LaunchBomb(enemy, player, lane);
         }
         else if (action == DiceAction.MoveAndAttack)
         {
-            Debug.Log("IA avanza y ataca");
+            uiPlayer.SetAction("IA avanza y ataca");
+            uiEnemy.SetAction("Avanzas y atacas");
             enemy.MoveForward(2);
 
             int lane = ai.ChooseLane();
-            Debug.Log("IA ataca al carril: " + (lane + 1));
+            uiPlayer.SetAction("IA ataca carril: " + (lane + 1));
+            uiEnemy.SetAction("Atacas carril: " + (lane + 1));
             LaunchBomb(enemy, player, lane);
         }
     }
@@ -124,19 +148,22 @@ public class GameManager : MonoBehaviour
         defender.SetLane(defenseLane);
 
         // Muestra el carril de ataque y defensa para que el jugador pueda ver lo que hizo la IA
-        Debug.Log("Ataque al carril: " + (attackLane + 1) + " | Defensa: " + (defenseLane + 1));
+        uiPlayer.SetAction("Ataque: " + (attackLane + 1) + " | Defensa: " + (defenseLane + 1));
+        uiEnemy.SetAction("Ataque: " + (attackLane + 1) + " | Defensa: " + (defenseLane + 1));
 
         // Si coincide carril se obtiene un golpe exitoso
         if (attackLane == defenseLane)
         {
             defender.MoveBackward(2);
-            Debug.Log("Ataque acertado");
+            uiPlayer.SetAction("Ataque acertado");
+            uiEnemy.SetAction("Ataque acertado");
         }
         else
         {
             // Si falla el atacante puede avanzar un paso como penalización por no acertar
             attacker.MoveForward(1);
-            Debug.Log("Ataque fallido, atacante avanza");
+            uiPlayer.SetAction("Ataque fallido, atacante avanza");
+            uiEnemy.SetAction("Ataque fallido, atacante avanza");
         }
     }
 
@@ -147,12 +174,14 @@ public class GameManager : MonoBehaviour
 
         if (player.position >= 30)
         {
-            Debug.Log("JUGADOR GANA");
+            uiPlayer.ShowWinner("Jugador 1 ha ganado");
+            uiEnemy.ShowWinner("Jugador 1 ha ganado");
             gameOver = true; // Detiene el juego
         }
         else if (enemy.position >= 30)
         {
-            Debug.Log("IA GANA");
+            uiPlayer.ShowWinner("Jugador 2 ha ganado");
+            uiEnemy.ShowWinner("Jugador 2 ha ganado");
             gameOver = true;
         }
     }
@@ -160,7 +189,8 @@ public class GameManager : MonoBehaviour
     // Maneja la elección del carril de ataque por parte del jugador y resuelve el ataque
     void PlayerChooseLane(int lane)
     {
-        Debug.Log("Jugador ataca al carril: " + (lane + 1));
+        uiPlayer.SetAction("Atacas carril: " + (lane + 1));
+        uiEnemy.SetAction("Jugador ataca carril: " + (lane + 1));
 
         waitingForAttackInput = false;
 
@@ -172,7 +202,9 @@ public class GameManager : MonoBehaviour
     {
         CheckWin(); // Verifica victoria
         playerTurn = !playerTurn; // Cambia turno
-        Debug.Log("CAMBIO DE TURNO");
+
+        uiPlayer.SetTurn(playerTurn);
+        uiEnemy.SetTurn(playerTurn);
     }
 
     void LaunchBomb(PlayerController attacker, PlayerController defender, int attackLane)
@@ -180,9 +212,11 @@ public class GameManager : MonoBehaviour
         // Posición destino según carril
         Vector3 targetPos = defender.transform.position;
         targetPos.x = defender.trackOffset + (attackLane - 1) * defender.laneOffset;
+
         // Instanciar bomba
         GameObject bomb = Instantiate(bombPrefab, bombSpawnPoint.position, Quaternion.identity);
         BombProjectile projectile = bomb.GetComponent<BombProjectile>();
+
         projectile.Init(targetPos, () =>
         {
             ResolveAttack(attacker, defender, attackLane);
