@@ -302,6 +302,8 @@ MonoBehaviour:
   player: {fileID: 1986355283}
   enemy: {fileID: 1993760453}
   ai: {fileID: 1993760452}
+  bombPrefab: {fileID: 8972015750070609583, guid: d8090d9b6b5b4704fb25f80f5c1067b8, type: 3}
+  bombSpawnPoint: {fileID: 658367391}
 --- !u!4 &658367391
 Transform:
   m_ObjectHideFlags: 0
@@ -311,7 +313,7 @@ Transform:
   m_GameObject: {fileID: 658367388}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 60, z: 30}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -594,6 +596,7 @@ MonoBehaviour:
   trackOffset: -8
   forwardStep: 2
   isPlayer: 1
+  moveSpeed: 5
 --- !u!65 &1986355284
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -850,6 +853,7 @@ MonoBehaviour:
   trackOffset: 8
   forwardStep: 2
   isPlayer: 0
+  moveSpeed: 5
 --- !u!65 &1993760454
 BoxCollider:
   m_ObjectHideFlags: 0

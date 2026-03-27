@@ -9,6 +9,8 @@ public class GameManager : MonoBehaviour
     public PlayerController player; // Jugador
     public PlayerController enemy; // IA o enemigo
     public AIController ai; // Lógica de la IA
+    public GameObject bombPrefab;
+    public Transform bombSpawnPoint;
 
     // Variables de control del flujo del juego
     private bool playerTurn = true; // Indica si es turno del jugador o IA
@@ -83,7 +85,6 @@ public class GameManager : MonoBehaviour
         else
         {
             HandleAITurn(action);
-            EndTurn();
         }
     }
 
@@ -96,12 +97,13 @@ public class GameManager : MonoBehaviour
         {
             Debug.Log("IA avanza");
             enemy.MoveForward(2);
+            EndTurn();
         }
         else if (action == DiceAction.Attack)
         {
             int lane = ai.ChooseLane(); // IA elige carril de ataque
             Debug.Log("IA ataca al carril: " + (lane + 1));
-            ResolveAttack(enemy, player, lane);
+            LaunchBomb(enemy, player, lane);
         }
         else if (action == DiceAction.MoveAndAttack)
         {
@@ -110,7 +112,7 @@ public class GameManager : MonoBehaviour
 
             int lane = ai.ChooseLane();
             Debug.Log("IA ataca al carril: " + (lane + 1));
-            ResolveAttack(enemy, player, lane);
+            LaunchBomb(enemy, player, lane);
         }
     }
 
@@ -120,6 +122,7 @@ public class GameManager : MonoBehaviour
         // La IA decide en qué carril defenderse
         int defenseLane = ai.ChooseDefenseLane(defender.currentLane);
         defender.SetLane(defenseLane);
+
         // Muestra el carril de ataque y defensa para que el jugador pueda ver lo que hizo la IA
         Debug.Log("Ataque al carril: " + (attackLane + 1) + " | Defensa: " + (defenseLane + 1));
 
@@ -159,11 +162,9 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("Jugador ataca al carril: " + (lane + 1));
 
-        waitingForAttackInput = false; // No espera más input de ataque
+        waitingForAttackInput = false;
 
-        ResolveAttack(player, enemy, lane);
-
-        EndTurn();
+        LaunchBomb(player, enemy, lane);
     }
 
     // Termina el turno e inicia el siguiente, también verifica si hay un ganador después de cada turno
@@ -172,5 +173,20 @@ public class GameManager : MonoBehaviour
         CheckWin(); // Verifica victoria
         playerTurn = !playerTurn; // Cambia turno
         Debug.Log("CAMBIO DE TURNO");
+    }
+
+    void LaunchBomb(PlayerController attacker, PlayerController defender, int attackLane)
+    {
+        // Posición destino según carril
+        Vector3 targetPos = defender.transform.position;
+        targetPos.x = defender.trackOffset + (attackLane - 1) * defender.laneOffset;
+        // Instanciar bomba
+        GameObject bomb = Instantiate(bombPrefab, bombSpawnPoint.position, Quaternion.identity);
+        BombProjectile projectile = bomb.GetComponent<BombProjectile>();
+        projectile.Init(targetPos, () =>
+        {
+            ResolveAttack(attacker, defender, attackLane);
+            EndTurn(); // El turno termina al impactar
+        });
     }
 }
