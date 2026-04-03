@@ -1,2 +1,2 @@
 # Cart-Project
-Hola
+Proyecto desarrollado para Wrong Genre Gamejam.
